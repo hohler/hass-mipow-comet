@@ -17,7 +17,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_MIPOW_COMET = (SUPPORT_RGB_COLOR | SUPPORT_WHITE_VALUE | SUPPORt_EFFECT | SUPPORt_FLASH)
+SUPPORT_MIPOW_COMET = (SUPPORT_RGB_COLOR | SUPPORT_WHITE_VALUE | SUPPORT_EFFECT | SUPPORT_FLASH)
 
 
 DEVICE_SCHEMA = vol.Schema({
@@ -30,7 +30,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 
 # pylint: disable=unused-argument
-def setup_platform(hass, config, add_devices, discovery_info=None):
+def setup(hass, config, add_devices, discovery_info=None):
     """Set up the mipow COMET platform."""
     lights = []
     for address, device_config in config[CONF_DEVICES].items():
@@ -49,12 +49,12 @@ class mipowComet(Light):
 
     def __init__(self, device):
         """Initialize the light."""
-        import mipow
+        import mipow_comet
 
         self._name = device['name']
         self._address = device['address']
         self.is_valid = True
-        self._bulb = mipow.mipow(self._address)
+        self._bulb = mipow_comet.mipow_comet(self._address)
         self._white = 0
         self._rgb = (0, 0, 0)
         self._state = False
