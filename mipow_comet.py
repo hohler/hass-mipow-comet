@@ -10,7 +10,7 @@ import voluptuous as vol
 from homeassistant.const import CONF_DEVICES, CONF_NAME
 from homeassistant.components.light import (
     ATTR_RGB_COLOR, ATTR_WHITE_VALUE,
-    SUPPORT_RGB_COLOR, SUPPORT_WHITE_VALUE, SUPPORT_EFFECT, SUPPORT_FLASH, Light, PLATFORM_SCHEMA)
+    SUPPORT_RGB_COLOR, SUPPORT_WHITE_VALUE, SUPPORT_EFFECT, SUPPORT_FLASH, EFFECT_COLORLOOP, EFFECT_RANDOM, Light, PLATFORM_SCHEMA)
 import homeassistant.helpers.config_validation as cv
 
 # REQUIREMENTS = ['python-mipow==0.3']
