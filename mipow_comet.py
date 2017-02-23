@@ -112,21 +112,23 @@ class mipowComet(Light):
 
     def set_rgb(self, red, green, blue):
         """Set the rgb state."""
-	self.connect()
-        self._bulb.set_rgb(red, green, blue)
-	"""return"""
-	self.disconnect()
+        self.connect()
+        result = self._bulb.set_rgb(red, green, blue)
+        """return"""
+        self.disconnect()
+        return result
 
     def set_white(self, white):
         """Set the white state."""
-	self.connect()
-        self._bulb.set_white(white)
-	"""return"""
-	self.disconnect()
+        self.connect()
+        result = self._bulb.set_white(white)
+        """return"""
+        self.disconnect()
+        return result
 
     def turn_on(self, **kwargs):
         """Turn the specified light on."""
-	self.connect()
+        self.connect()
         self._state = True
         self._bulb.on()
 
@@ -146,36 +148,36 @@ class mipowComet(Light):
         else:
             self.set_rgb(self._rgb[0], self._rgb[1], self._rgb[2])
 
-	self.disconnect()
+        self.disconnect()
 
     def turn_off(self, **kwargs):
         """Turn the specified light off."""
-	self.connect()
+        self.connect()
         self._state = False
         self._bulb.off()
-	self.disconnect()
+        self.disconnect()
 
     def update(self):
         """Synchronise internal state with the actual light state."""
-	self.connect()
+        self.connect()
         self._rgb = self._bulb.get_colour()
         self._white = self._bulb.get_white()
         self._state = self._bulb.get_on()
-	self.disconnect()
+        self.disconnect()
 
     def update_init(self):
-	"""Update without connect"""
-	self._rgb = self._bulb.get_colour()
-	self._white = self._bulb.get_white()
-	self._state = self._bulb.get_on()
-	self.disconnect()
+        """Update without connect"""
+        self._rgb = self._bulb.get_colour()
+        self._white = self._bulb.get_white()
+        self._state = self._bulb.get_on()
+        self.disconnect()
 
     def connect(self):
-	if self._bulb.connect() is False:
+        if self._bulb.connect() is False:
             self.is_valid = False
             _LOGGER.error(
                 "Failed to connect to bulb %s, %s", self._address, self._name)
             return
 
     def disconnect(self):
-	return self._bulb.disconnect()
+        return self._bulb.disconnect()
