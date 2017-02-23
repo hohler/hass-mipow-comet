@@ -4,6 +4,10 @@ Home-Assistant mipow comet component
 # Install python-mipow
 	pip install git+https://papagei9@github.com/papagei9/python-mipow.git
 
+# Install bluepy
+
+See here: [https://github.com/IanHarvey/bluepy](https://github.com/IanHarvey/bluepy)
+
 # Setup
 
 Copy mipow_comet.py to `home-assistant-config-dir/custom_components/light/`
