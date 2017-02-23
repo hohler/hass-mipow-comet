@@ -9,7 +9,7 @@ import voluptuous as vol
 
 from homeassistant.const import CONF_DEVICES, CONF_NAME
 from homeassistant.components.light import (
-    ATTR_RGB_COLOR, ATTR_WHITE_VALUE, 
+    ATTR_RGB_COLOR, ATTR_WHITE_VALUE,
     SUPPORT_RGB_COLOR, SUPPORT_WHITE_VALUE, SUPPORT_EFFECT, SUPPORT_FLASH, EFFECT_COLORLOOP, EFFECT_RANDOM, Light, PLATFORM_SCHEMA)
 import homeassistant.helpers.config_validation as cv
 
@@ -113,7 +113,8 @@ class mipowComet(Light):
     def set_rgb(self, red, green, blue):
         """Set the rgb state."""
         # self.connect()
-        result = self._bulb.set_rgb(red, green, blue)
+        # result = self._bulb.set_rgb(red, green, blue)
+        result = self._bulb.set_wrgb(self._white, red, green, blue)
         """return"""
         # self.disconnect()
         return result
@@ -121,7 +122,8 @@ class mipowComet(Light):
     def set_white(self, white):
         """Set the white state."""
         # self.connect()
-        result = self._bulb.set_white(white)
+        # result = self._bulb.set_white(white)
+        result = self._bulb.set_wrgb(white, self._rgb[0], self._rgb[1], self._rgb[2])
         """return"""
         # self.disconnect()
         return result
@@ -137,16 +139,17 @@ class mipowComet(Light):
 
         if white is not None:
             self._white = white
-            self._rgb = (0, 0, 0)
+            # self._rgb = (0, 0, 0)
 
         if rgb is not None:
-            self._white = 0
+            # self._white = 0
             self._rgb = rgb
 
-        if self._white != 0:
-            self.set_white(self._white)
-        else:
-            self.set_rgb(self._rgb[0], self._rgb[1], self._rgb[2])
+        # if self._white != 0:
+        #    self.set_white(self._white)
+        # else:
+        #    self.set_rgb(self._rgb[0], self._rgb[1], self._rgb[2])
+        self._bulb.set_wrgb(self._white, self._rgb[0], self._rgb[1], self._rgb[2])
         # self.disconnect()
 
     def turn_off(self, **kwargs):
