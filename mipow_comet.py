@@ -4,12 +4,13 @@ For more details about this platform, please refer to the documentation at
 https://github.com/papagei9/hass-mipow-comet
 """
 import logging
+import random
 
 import voluptuous as vol
 
 from homeassistant.const import CONF_DEVICES, CONF_NAME
 from homeassistant.components.light import (
-    ATTR_RGB_COLOR, ATTR_WHITE_VALUE, ATTR_BRIGHTNESS,
+    ATTR_RGB_COLOR, ATTR_WHITE_VALUE, ATTR_BRIGHTNESS, ATTR_EFFECT,
     SUPPORT_RGB_COLOR, SUPPORT_WHITE_VALUE, SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_FLASH, EFFECT_COLORLOOP, EFFECT_RANDOM, Light, PLATFORM_SCHEMA)
 import homeassistant.helpers.config_validation as cv
 
@@ -27,6 +28,12 @@ DEVICE_SCHEMA = vol.Schema({
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_DEVICES, default={}): {cv.string: DEVICE_SCHEMA},
 })
+
+# List of support effects which aren't already declared
+EFFECT_BLINK = 'color_blink'
+EFFECT_CANDLE = 'color_candle'
+EFFECT_FADE = 'color_fade'
+EFFECT_COLORJUMP = 'color_jump'
 
 
 # pylint: disable=unused-argument
@@ -99,7 +106,7 @@ class mipowComet(Light):
     @property
     def effect_list(self):
         """Return the list of supported effects."""
-        return [EFFECT_COLORLOOP, EFFECT_RANDOM]
+        return [EFFECT_RANDOM, EFFECT_BLINK, EFFECT_COLORLOOP, EFFECT_COLORJUMP, EFFECT_FADE, EFFECT_CANDLE]
 
     @property
     def should_poll(self):
@@ -137,6 +144,21 @@ class mipowComet(Light):
         result = self._bulb.set_brightness(brightness)
         return result
 
+# (self, red, green, blue, mode, speed):
+    def set_effect(self, effect):
+        if effect == EFFECT_RANDOM:
+            self.set_rgb(random.randrange(0, 255), random.randrange(0, 255), random.randrange(255))
+        elif effect == EFFECT_COLORLOOP:
+            self._bulb.set_effect(self._rgb[0], self._rgb[1], self._rgb[2], 0x03, 0x14)
+        elif effect == EFFECT_COLORJUMP:
+            self._bulb.set_effect(0x00, 0x00, 0x00, 0x02, 0x14)
+        elif effect == EFFECT_CANDLE:
+            self._bulb.set_effect(self._rgb[0], self._rgb[1], self._rgb[2], 0x04, 0x14)
+        elif effect == EFFECT_BLINK:
+            self._bulb.set_effect(self._rgb[0], self._rgb[1], self._rgb[2], 0x00, 0x14)
+        elif effect == EFFECT_FADE:
+            self._bulb.set_effect(self._rgb[0], self._rgb[1], self._rgb[2], 0x01, 0x14)
+
     def turn_on(self, **kwargs):
         """Turn the specified light on."""
         # self.connect()
@@ -146,6 +168,8 @@ class mipowComet(Light):
         rgb = kwargs.get(ATTR_RGB_COLOR)
         white = kwargs.get(ATTR_WHITE_VALUE)
         brightness = kwargs.get(ATTR_BRIGHTNESS)
+        effect = kwargs.get(ATTR_EFFECT)
+
 
         self._brightness = brightness
 
@@ -159,10 +183,13 @@ class mipowComet(Light):
 
         if self._white != 0:
             self.set_white(self._white)
-        else:
+        elif self._rgb != (0, 0, 0) and effect is None:
             self.set_rgb(self._rgb[0], self._rgb[1], self._rgb[2])
-
-        self.set_brightness(self._brightness)
+            if brightness is not None:
+                self.set_brightness(self._brightness)
+        elif effect is not None:
+            self._effect = effect
+            self.set_effect(effect)
         # self.disconnect()
 
     def turn_off(self, **kwargs):
