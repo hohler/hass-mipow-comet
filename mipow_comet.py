@@ -11,14 +11,14 @@ import voluptuous as vol
 from homeassistant.const import CONF_DEVICES, CONF_NAME
 from homeassistant.components.light import (
     ATTR_RGB_COLOR, ATTR_WHITE_VALUE, ATTR_BRIGHTNESS, ATTR_EFFECT,
-    SUPPORT_RGB_COLOR, SUPPORT_WHITE_VALUE, SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_FLASH, EFFECT_COLORLOOP, EFFECT_RANDOM, Light, PLATFORM_SCHEMA)
+    SUPPORT_RGB_COLOR, SUPPORT_WHITE_VALUE, SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, EFFECT_COLORLOOP, EFFECT_RANDOM, Light, PLATFORM_SCHEMA)
 import homeassistant.helpers.config_validation as cv
 
 # REQUIREMENTS = ['python-mipow==0.3']
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_MIPOW_COMET = (SUPPORT_RGB_COLOR | SUPPORT_WHITE_VALUE | SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_FLASH)
+SUPPORT_MIPOW_COMET = (SUPPORT_RGB_COLOR | SUPPORT_WHITE_VALUE | SUPPORT_BRIGHTNESS | SUPPORT_EFFECT)
 
 
 DEVICE_SCHEMA = vol.Schema({
@@ -30,11 +30,10 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 # List of support effects which aren't already declared
-EFFECT_BLINK = 'color_blink'
 EFFECT_CANDLE = 'color_candle'
 EFFECT_FADE = 'color_fade'
 EFFECT_COLORJUMP = 'color_jump'
-
+EFFECT_BLINK = 'color_blink'
 
 # pylint: disable=unused-argument
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -169,7 +168,6 @@ class mipowComet(Light):
         white = kwargs.get(ATTR_WHITE_VALUE)
         brightness = kwargs.get(ATTR_BRIGHTNESS)
         effect = kwargs.get(ATTR_EFFECT)
-
 
         self._brightness = brightness
 
