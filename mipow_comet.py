@@ -132,7 +132,7 @@ class mipowComet(Light):
         # self.disconnect()
         return result
 
-    def set_brighntess(self, brightness):
+    def set_brightness(self, brightness):
         """Set the brightness."""
         result = self._bulb.set_brightness(brightness)
         return result
