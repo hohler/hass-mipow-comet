@@ -9,15 +9,15 @@ import voluptuous as vol
 
 from homeassistant.const import CONF_DEVICES, CONF_NAME
 from homeassistant.components.light import (
-    ATTR_RGB_COLOR, ATTR_WHITE_VALUE, 
-    SUPPORT_RGB_COLOR, SUPPORT_WHITE_VALUE, SUPPORT_EFFECT, SUPPORT_FLASH, EFFECT_COLORLOOP, EFFECT_RANDOM, Light, PLATFORM_SCHEMA)
+    ATTR_RGB_COLOR, ATTR_WHITE_VALUE, ATTR_BRIGHTNESS,
+    SUPPORT_RGB_COLOR, SUPPORT_WHITE_VALUE, SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_FLASH, EFFECT_COLORLOOP, EFFECT_RANDOM, Light, PLATFORM_SCHEMA)
 import homeassistant.helpers.config_validation as cv
 
 # REQUIREMENTS = ['python-mipow==0.3']
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_MIPOW_COMET = (SUPPORT_RGB_COLOR | SUPPORT_WHITE_VALUE | SUPPORT_EFFECT | SUPPORT_FLASH)
+SUPPORT_MIPOW_COMET = (SUPPORT_RGB_COLOR | SUPPORT_WHITE_VALUE | SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_FLASH)
 
 
 DEVICE_SCHEMA = vol.Schema({
@@ -58,6 +58,7 @@ class mipowComet(Light):
         self._white = 0
         self._rgb = (0, 0, 0)
         self._state = False
+        self._brightness = 255
         if self._bulb.connect() is False:
             self.is_valid = False
             _LOGGER.error(
@@ -110,6 +111,11 @@ class mipowComet(Light):
         """We can report the actual state."""
         return False
 
+    @property
+    def brightness(self):
+        """Return the brightness."""
+        return self._brightness
+
     def set_rgb(self, red, green, blue):
         """Set the rgb state."""
         # self.connect()
@@ -126,6 +132,11 @@ class mipowComet(Light):
         # self.disconnect()
         return result
 
+    def set_brighntess(self, brightness):
+        """Set the brightness."""
+        result = self._bulb.set_brightness(brightness)
+        return result
+
     def turn_on(self, **kwargs):
         """Turn the specified light on."""
         # self.connect()
@@ -134,6 +145,9 @@ class mipowComet(Light):
 
         rgb = kwargs.get(ATTR_RGB_COLOR)
         white = kwargs.get(ATTR_WHITE_VALUE)
+        brightness = kwargs.get(ATTR_BRIGHTNESS)
+
+        self._brightness = brightness
 
         if white is not None:
             self._white = white
@@ -147,6 +161,8 @@ class mipowComet(Light):
             self.set_white(self._white)
         else:
             self.set_rgb(self._rgb[0], self._rgb[1], self._rgb[2])
+
+        self.set_brightness(self._brightness)
         # self.disconnect()
 
     def turn_off(self, **kwargs):
@@ -162,6 +178,7 @@ class mipowComet(Light):
         self._rgb = self._bulb.get_colour()
         self._white = self._bulb.get_white()
         self._state = self._bulb.get_on()
+        self._brightness = self._bulb.get_brightness()
         # self.disconnect()
 
     def update_init(self):
@@ -169,6 +186,7 @@ class mipowComet(Light):
         self._rgb = self._bulb.get_colour()
         self._white = self._bulb.get_white()
         self._state = self._bulb.get_on()
+        self._brightness = self._bulb.get_brightness()
         # self.disconnect()
 
     def connect(self):
