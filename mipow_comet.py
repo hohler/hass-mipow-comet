@@ -162,7 +162,7 @@ class mipowComet(Light):
         """Turn the specified light on."""
         # self.connect()
         self._state = True
-        self._bulb.on()
+        # self._bulb.on()
 
         rgb = kwargs.get(ATTR_RGB_COLOR)
         white = kwargs.get(ATTR_WHITE_VALUE)
